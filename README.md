@@ -1,5 +1,15 @@
 # Active Directory Identity Exploitation: Kerberoasting, Lateral Movement & SIEM Threat Hunting Lab
 
+## 🌟 Introduction
+
+In modern corporate environments, traditional firewalls and antivirus software are no longer enough to stop data breaches. Today, **Identity is the new security perimeter**. Real-world hackers rarely use cinematic "exploits" to smash through a digital wall; instead, they steal legitimate user passwords and simply log into the network completely undetected. This project simulates this exact tactical landscape.
+
+This project marks a comprehensive, hands-on expansion of my enterprise telemetry environment into the realm of **Identity Threat Detection and Response (ITDR)**. The purpose of this lab was to design a realistic corporate network infrastructure, deliberately introduce common administrative oversights, and execute a multi-stage cyberattack lifecycle. 
+
+By pivoting seamlessly between an offensive threat actor and an enterprise security defender, I engineered a project that maps the physics of an identity compromise directly to advanced **Splunk SIEM** behavioral analytics. This lab serves as hard engineering proof of my ability to harden corporate directory assets, analyze complex authentication flows, and hunt down stealthy, credential-based intrusions completely in the dark.
+
+---
+
 ## 📌 Project Overview
 Welcome to my enterprise security simulation lab! In this project, I built a corporate network sandbox from scratch to simulate a multi-stage cyberattack. I played both roles: the **Red Team (the attacker)** trying to sneak through the network, and the **Blue Team (the defender)** using a central security dashboard to catch the hacker red-handed.
 
@@ -65,3 +75,16 @@ By building and auditing this entire lifecycle from scratch, I mastered critical
 * **Identity Threat Detection & Response (ITDR):** Understanding how attackers abuse legitimate user permissions to bypass traditional antivirus blocks.
 * **The Principle of Least Privilege:** Why service accounts must be restricted to their dedicated servers and never granted administrative rights over standard user endpoints.
 * **SIEM Data Engineering:** Learning how to clean, filter, and parse raw Windows Event telemetry using advanced Splunk Processing Language (SPL) to build production-grade detection logic.
+
+---
+
+## 🏁 Conclusion
+
+This project successfully demonstrates the entire lifecycle of an identity-driven cyberattack, moving fluidly from initial network discovery to full network-wide lateral movement and defensive remediation. By executing this lab, I successfully validated how a single low-privileged network foothold can be leveraged by an adversary to harvest high-value service tickets, crack critical corporate credentials offline, and pivot deeply into standard employee workstations.
+
+The core revelation of this project belongs to the **Blue Team defense phase**. By shifting into the role of a blind Threat Hunter, I proved that while attackers can hide behind valid user names and stolen passwords, they cannot hide their **cryptographic behavior**. 
+
+Through the intentional engineering of Advanced Windows Audit Policies, I successfully forced the environment to report subtle indicators of compromise—specifically isolating old, crackable encryption downgrades (`0x17`) and filtering away thousands of lines of background computer account noise using advanced Splunk Processing Language (`NOT Account_Name="*$"`). 
+
+Ultimately, this project highlights a critical industry truth: **preventing an intrusion is an IT function, but hunting down and exposing an active threat is the core job of a Detection Engineer.** This lab stands as definitive proof of my capability to architect enterprise security sandboxes, diagnose systemic operating system logging visibility gaps, and translate complex network behaviors into clean, automated security alerts that keep organizations safe from modern corporate breaches.
+
