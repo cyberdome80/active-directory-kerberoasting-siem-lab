@@ -169,8 +169,23 @@ To find where the hacker moved laterally, I wrote an advanced data-filtering exc
 The final forensic breakout. By expanding the filtered log details, the SIEM hands us the entire threat story in plain text. It reveals a network authentication (Logon_Type: 3) originating from HR-DESKTOP with an Elevated Token: Yes. This provides undeniable forensic proof that our security logging infrastructure successfully captured, tracked, and unmasked the credential-based network pivot from end to end.
 
 
+**Refining the Search with Data Exclusions**
+<img width="1920" height="891" alt="22_Refining the Search with Data Exclusions" src="https://github.com/user-attachments/assets/49d774f2-c0d4-4b20-a36c-76eaebdfb8aa" />
+
+
+This screenshot captures the ultimate refinement of my blind threat hunt inside Splunk. I modified the search query to drop background noise by running: index=endpoint EventCode=4624 Logon_Type=3 NOT (Account_Name="*$") NOT 192.168.10.21. By actively throwing away automated computer accounts (the names ending in $) and filtering out the background traffic originating from the workstation itself, I successfully crushed a mountain of 205 raw logs down to just 5 highly specific events.
+
+
+**Unmasking the Attacker (The Forensic Smoking Gun)**
+<img width="1920" height="891" alt="23Unmasking the Attacker (The Forensic Smoking Gun)" src="https://github.com/user-attachments/assets/b90950da-3822-4db0-a993-b45c3354167e" />
+
+
+This is the absolute crown jewel of my Blue Team threat hunt. By expanding one of the filtered log details, the attacker is completely unmasked in plain text. The forensic fields explicitly map the malicious lateral movement pivot: the stolen database account (svc-sql) successfully established a network connection (Logon Type: 3) carrying full administrative privileges (Elevated Token: Yes). Most importantly, look at the Source Network Address field—it caught the attackers Kali Linux machine (192.168.10.250) red-handed. This visually proves that the advanced logging infrastructure successfully recorded, tracked, and exposed the credential-based network intrusion from end to end.
+
 
 ---
+
+
 
 ## 🎯 Key Takeaways & Career Skills Gained
 By building and auditing this entire lifecycle from scratch, I mastered critical enterprise cybersecurity concepts:
