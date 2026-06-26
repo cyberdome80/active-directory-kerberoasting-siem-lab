@@ -109,6 +109,30 @@ Now that the attacker has stolen the database service password, they want to see
 * **What I did:** I ran a "Credential Spray" using NetExec to test the stolen password across every machine. It passed perfectly. 
 * **The Breakthrough:** I launched a tool called **Evil-WinRM** from Kali. It connected over the network management wires, bypassed the workstation firewalls, and opened an interactive remote command-line terminal directly inside `HR-DESKTOP`. The attacker was officially in control of the employee's computer.
 
+**NetExec Domain Credential Spray Sweep**
+<img width="1920" height="920" alt="16_NetExec_Credential_Spray_Results" src="https://github.com/user-attachments/assets/bd4ad27d-e3e0-4d0e-8023-f9e8b9f3d1fd" />
+
+The attacker weaponizing the newly cracked password. I used NetExec to execute a "Credential Spray," blasting the stolen svc-sql password across the entire subnet in seconds. The green [+] blocks confirm that the password is completely valid and accepted by the Domain Controller and both Windows 10 endpoints.
+
+
+**Remote Management Users Group Allocation**
+<img width="709" height="461" alt="17A_AD_Remote_Management_Group" src="https://github.com/user-attachments/assets/d4b4b6c4-d0c8-44b6-ac39-4fe27ae3e6ba" />
+
+To cross the network bridge without lazily changing the service account into a Domain Admin, I used the Active Directory GUI to place svc-sql inside the Remote Management Users group. This perfectly replicates an enterprise environment where service profiles are granted remote management rights to perform automated tasks over the network wires.
+
+
+**Evil-WinRM Interactive Remote Shell Foothold**
+<img width="953" height="432" alt="18_Evil_WinRM_Successful_Foothold" src="https://github.com/user-attachments/assets/3ab273b1-c39e-4438-bf16-3e85db2cde1a" />
+
+The offensive network breakthrough. I launched an administrative tool called Evil-WinRM from Kali Linux. It bypassed the endpoint firewalls, cleared the network security checks, and spawned a live, interactive remote PowerShell console running straight inside the victim workstation (192.168.10.21). The attacker is now inside the employee desktop.
+
+
+**Workstation Active User Session Reconnaissance**
+<img width="953" height="421" alt="19_Workstation_User_Recon_Final" src="https://github.com/user-attachments/assets/6fca09fd-e5ac-4ae1-88ab-74acb9930472" />
+
+Post-exploitation surveillance. Once inside the remote shell, I ran the native Windows command query user. The terminal returned a clean session table confirming that our target employee, Mike Daniels, is currently logged onto the physical console screen. This establishes a clear objective for a real-world hacker: hijack Mike's open session memory to steal higher-level network tokens!
+
+
 ---
 
 ## 🕵️‍♂️ The Threat Hunt: How I Caught the Hacker in the Dark
@@ -122,11 +146,29 @@ To make passwords easy to crack offline, automated hacking tools force the Domai
 * **The Splunk Query:** `index=endpoint host=ADDC01 EventCode=4769 "0x17"`
 * **The Catch:** This immediately stripped away the hacker's anonymity. Splunk surfaced a high-severity alert showing that the user account `svc-sql` was targeted using the weak `0x17` protocol, originating from the attacker's IP: `192.168.10.250`.
 
+**Splunk Cryptographic Downgrade Behavioral Query**
+<img width="958" height="332" alt="12_Blind_Hunt_Query" src="https://github.com/user-attachments/assets/4f4bb920-b69b-479e-934b-f30184b69795" />
+
+Swapping hats to the Blue Team Security Analyst, I opened the Splunk SIEM dashboard to search the network completely in the dark. I wrote a search targeting the cryptographic downgrade anomaly: EventCode=4769 "0x17". Hacking toolkits force systems to use ancient 0x17 (RC4) encryption because it is easy to crack offline. Finding this code immediately exposes that an active identity attack took place.
+
+
 ### 🔬 Hunt 2: Filtering Out the Corporate Noise
 When you look at network logons, computers talk to each other automatically billions of times a second. This creates a mountain of background noise. In Windows, automated machine accounts always end with a dollar sign (like `HR-DESKTOP$`). 
 * **The Splunk Query:** `index=endpoint EventCode=4624 Logon_Type=3 NOT (Account_Name="*$")`
 * **The Logic Explained:** I ordered Splunk to show me **EventCode 4624** (Successful Login) and **Logon_Type 3** (connecting over network wires instead of sitting at the physical keyboard), but added the `NOT "*$"` rule to instantly throw away all automated computer noise.
 * **The Catch:** The search instantly dropped over 200 spam logs down to a handful of clean lines, instantly exposing that the stolen `svc-sql` account had breached our workstations remotely from the outside network.
+
+**Splunk Exclusions Clean Data Results**
+<img width="1920" height="891" alt="20_Splunk_Blind_Hunt_Results" src="https://github.com/user-attachments/assets/30dee6bf-32a9-4ca5-aad4-a4dfa7aacd88" />
+
+To find where the hacker moved laterally, I wrote an advanced data-filtering exclusion query: EventCode=4624 Logon_Type=3 NOT (Account_Name="*$"). Windows networks generate millions of automated background logs every second where computer names end with a dollar sign ($). By applying the NOT "*$" rule, I instantly wiped away 205 lines of corporate background noise, dropping the dashboard view down to the precise malicious network logins.
+
+**Forensic Authentication Field Analysis**
+<img width="1920" height="891" alt="21_Forensic_Network_Logon_Analysis" src="https://github.com/user-attachments/assets/0338a4c7-2734-4a0e-817b-25208578ab20" />
+
+The final forensic breakout. By expanding the filtered log details, the SIEM hands us the entire threat story in plain text. It reveals a network authentication (Logon_Type: 3) originating from HR-DESKTOP with an Elevated Token: Yes. This provides undeniable forensic proof that our security logging infrastructure successfully captured, tracked, and unmasked the credential-based network pivot from end to end.
+
+
 
 ---
 
