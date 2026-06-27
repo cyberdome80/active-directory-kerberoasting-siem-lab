@@ -201,7 +201,30 @@ This project successfully demonstrates the entire lifecycle of an identity-drive
 
 The core revelation of this project belongs to the **Blue Team defense phase**. By shifting into the role of a blind Threat Hunter, I proved that while attackers can hide behind valid user names and stolen passwords, they cannot hide their **cryptographic behavior**. 
 
-Through the intentional engineering of Advanced Windows Audit Policies, I successfully forced the environment to report subtle indicators of compromise—specifically isolating old, crackable encryption downgrades (`0x17`) and filtering away thousands of lines of background computer account noise using advanced Splunk Processing Language (`NOT Account_Name="*$"`). 
+Through the intentional engineering of Advanced Windows Audit Policies, I successfully forced the environment to report subtle indicators of compromise, specifically isolating old, crackable encryption downgrades (`0x17`) and filtering away thousands of lines of background computer account noise using advanced Splunk Processing Language (`NOT Account_Name="*$"`). 
 
 Ultimately, this project highlights a critical industry truth: **preventing an intrusion is an IT function, but hunting down and exposing an active threat is the core job of a Detection Engineer.** This lab stands as definitive proof of my capability to architect enterprise security sandboxes, diagnose systemic operating system logging visibility gaps, and translate complex network behaviors into clean, automated security alerts that keep organizations safe from modern corporate breaches.
 
+---
+## 🏁 Conclusion
+
+To summarize this entire project, this lab was a complete simulation of how a modern corporate cyberattack works from start to finish, and how security teams catch it. 
+
+### 🔴 The Attack Lesson: The Power of Stolen Identity
+The first half of this project proved that hackers do not always need to use complicated virus software to break into a company. Instead, they look for human mistakes and weak configurations. 
+
+By starting with a fake phishing attack on a standard employee (Mike Daniels), the attacker was able to exploit a common setting called Kerberoasting. This allowed them to steal a scrambled password file belonging to the Database Service Account (`svc-sql`) and crack it offline using a tool called John the Ripper. Because that database account had special network permissions, the attacker was able to use a remote command tool called Evil-WinRM to jump across the network wires and take full control over the employee's workstation (`HR-DESKTOP`). 
+
+This shows a major real-world risk: if an organization gives an automated software profile too many permissions, a hacker who steals that one identity can easily move sideways through the entire company.
+
+### 🔵 The Defense Lesson: Finding the Needle in the Haystack
+The second half of this project showed how security teams track down these hidden attackers. When a hacker uses a real employee's username and password, standard security software assumes they are a legitimate worker. They become invisible inside the daily traffic.
+
+To find them, we logged into our Splunk monitoring dashboard completely blind and looked for behavioral clues instead of names:
+1. **The Cryptographic Clue:** We searched for an ancient type of password code (`0x17`) that hacking tools use to make passwords easy to crack. 
+2. **Clearing out the Noise:** A normal company network generates thousands of automated background logs every second (like computers checking for software updates). These automated accounts always end with a dollar sign (`$`). By writing a specific filter to hide these (`NOT Account_Name="*$"`), we instantly dropped our view from hundreds of confusing system logs down to the exact 5 events where the hacker was hiding.
+
+By expanding those final logs, we uncovered the ultimate proof of the hack: the stolen database account connecting over the network wires from the exact IP address of our Kali Linux attack machine (`192.168.10.250`).
+
+### 📢 Final Verdict
+Ultimately, this project proves that while a hacker can steal a real username and a valid password, they cannot hide their digital footprints. By configuring advanced system recording rules and writing smart filters in a monitoring dashboard, defenders can clear away daily background corporate noise and expose hidden network threats completely in the dark.
