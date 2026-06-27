@@ -149,7 +149,8 @@ To make passwords easy to crack offline, automated hacking tools force the Domai
 **Splunk Cryptographic Downgrade Behavioral Query**
 <img width="958" height="332" alt="12_Blind_Hunt_Query" src="https://github.com/user-attachments/assets/4f4bb920-b69b-479e-934b-f30184b69795" />
 
-Swapping hats to the Blue Team Security Analyst, I opened the Splunk SIEM dashboard to search the network completely in the dark. I wrote a search targeting the cryptographic downgrade anomaly: EventCode=4769 "0x17". Hacking toolkits force systems to use ancient 0x17 (RC4) encryption because it is easy to crack offline. Finding this code immediately exposes that an active identity attack took place.
+Swapping hats to the Blue Team Security Analyst, I opened the Splunk SIEM dashboard to search the network completely in the dark. I wrote a search targeting the cryptographic downgrade anomaly: EventCode=4769 "0x17". Hacking toolkits force systems to use ancient 0x17 (RC4) encryption because it is easy to crack offline. Finding this code immediately exposes that an active identity attack took place. The log reveals that the compromised user account `mdaniels` requested a Kerberos service ticket for the high-privilege `svc-sql` service account.
+
 
 
 ### 🔬 Hunt 2: Filtering Out the Corporate Noise
