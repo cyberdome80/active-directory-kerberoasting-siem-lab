@@ -186,6 +186,28 @@ This is the absolute crown jewel of my Blue Team threat hunt. By expanding one o
 
 ---
 
+## Tracking the Remote PowerShell Engine 
+**Using Sysmon to monitor the background system processes activated by Evil-WinRM**
+
+<img width="1920" height="891" alt="VirtualBox_Windows10_27_06_2026_03_00_32" src="https://github.com/user-attachments/assets/2ad10d06-7f2d-4d86-9dc2-103fdc9b3971" />
+
+While network login codes tell us that someone connected, we need deep operating system visibility to track what they are doing. I wrote a search inside Splunk targeting wsmprovhost. This is the background Windows management tool that automatically wakes up when someone launches a remote session like Evil-WinRM. The query successfully uncovered 51 background events on HR-DESKTOP, showing that our Sysmon security monitoring tool is tracking every hidden action occurring inside that remote hacker terminal. 
+
+
+---
+
+## Exposing the Attacker's Keyboard Commands 
+**Using Sysmon EventCode 1 to catch the exact text commands typed by the intruder**
+
+<img width="1920" height="891" alt="VirtualBox_Windows10_27_06_2026_02_48_17" src="https://github.com/user-attachments/assets/0b6dbc02-0f37-4e4a-80aa-e77fd42567fe" />
+
+This slide contains the ultimate text proof of the attack. I refined the search to look specifically for index=endpoint "query user". Splunk returned 2 precise events. By reading the raw log text, it explicitly unmasks the exact command line typed by the hacker: query user. It also proves that the command was run on HR-DESKTOP by the stolen svc-sql identity. The hacker's invisible terminal is now completely transparent to our defense team.
+
+
+---
+
+
+
 
 
 ## 🎯 Key Takeaways & Career Skills Gained
@@ -196,17 +218,7 @@ By building and auditing this entire lifecycle from scratch, I mastered critical
 
 ---
 
-## 🏁 Conclusion
 
-This project successfully demonstrates the entire lifecycle of an identity-driven cyberattack, moving fluidly from initial network discovery to full network-wide lateral movement and defensive remediation. By executing this lab, I successfully validated how a single low-privileged network foothold can be leveraged by an adversary to harvest high-value service tickets, crack critical corporate credentials offline, and pivot deeply into standard employee workstations.
-
-The core revelation of this project belongs to the **Blue Team defense phase**. By shifting into the role of a blind Threat Hunter, I proved that while attackers can hide behind valid user names and stolen passwords, they cannot hide their **cryptographic behavior**. 
-
-Through the intentional engineering of Advanced Windows Audit Policies, I successfully forced the environment to report subtle indicators of compromise, specifically isolating old, crackable encryption downgrades (`0x17`) and filtering away thousands of lines of background computer account noise using advanced Splunk Processing Language (`NOT Account_Name="*$"`). 
-
-Ultimately, this project highlights a critical industry truth: **preventing an intrusion is an IT function, but hunting down and exposing an active threat is the core job of a Detection Engineer.** This lab stands as definitive proof of my capability to architect enterprise security sandboxes, diagnose systemic operating system logging visibility gaps, and translate complex network behaviors into clean, automated security alerts that keep organizations safe from modern corporate breaches.
-
----
 ## 🏁 Conclusion
 
 To summarize this entire project, this lab was a complete simulation of how a modern corporate cyberattack works from start to finish, and how security teams catch it. 
